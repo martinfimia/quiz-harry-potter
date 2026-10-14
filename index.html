@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Quiz Harry Potter - Edición Suprema</title>
+<style>
+  :root {
+    --bg-main: #080c14;
+    --bg-card: #0e1624;
+    --bg-item: #151f30;
+    --bg-item-hover: #1c293f;
+    --border-subtle: #243249;
+    --gold: #ecc465;
+    --gold-dim: rgba(236, 196, 101, 0.15);
+    --text-white: #f8fafc;
+    --text-muted: #94a3b8;
+    --correct: #22c55e;
+    --correct-bg: rgba(34, 197, 94, 0.15);
+    --wrong: #ef4444;
+    --wrong-bg: rgba(239, 68, 68, 0.15);
+    --felix: #38bdf8;
+    --felix-bg: rgba(56, 189, 248, 0.15);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-white);
+    line-height: 1.45;
+    padding: 16px 12px 40px;
+    max-width: 540px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+
+  .card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 22px;
+    padding: 20px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  }
+
+  .header-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  h1.app-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: 0.3px;
+  }
+
+  .btn-icon {
+    background-color: var(--bg-item);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-white);
+    border-radius: 12px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  h2.section-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+    color: var(--text-white);
+  }
+
+  .subtitle {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .btn-pill {
+    background-color: var(--bg-item);
+    color: var(--text-white);
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    padding: 9px 15px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-pill:hover {
+    background-color: var(--bg-item-hover);
+  }
+
+  .book-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .book-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--bg-item);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 13px 15px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    user-select: none;
+  }
+
+  .book-item.selected {
+    border-color: var(--gold);
+    background-color: #172235;
+  }
+
+  .book-left {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+  }
+
+  .roman-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background-color: #1e293b;
+    color: var(--gold);
+    font-weight: 800;
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .book-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-white);
+  }
+
+  .book-count {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  .check-circle {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.18s ease;
+  }
+
+  .book-item.selected .check-circle {
+    background-color: var(--gold);
+    border-color: var(--gold);
+    color: #090d16;
+  }
+
+  .check-icon {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    stroke-width: 3;
+    fill: none;
+    opacity: 0;
+  }
+
+  .book-item.selected .check-icon {
+    opacity: 1;
+  }
+
+  .mode-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .mode-item {
+    background-color: var(--bg-item);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    user-select: none;
+  }
+
+  .mode-item.selected {
+    border-color: var(--gold);
+    background-color: #172235;
+  }
+
+  .mode-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+
+  .mode-desc {
+    font-size: 0.86rem;
+    color: var(--text-muted);
+  }
+
+  .summary-box {
+    background-color: #111a2b;
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 13px 15px;
+    font-size: 0.94rem;
+    color: var(--text-white);
+    margin-bottom: 16px;
+  }
+
+  .gold-text {
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .btn-primary {
+    width: 100%;
+    background-color: var(--gold);
+    color: #0b0f19;
+    border: none;
+    border-radius: 16px;
+    padding: 16px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    filter: brightness(1.06);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: scale(0.99);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    padding: 4px 8px;
+  }
+
+  /* Quiz Screen */
+  .hidden {
+    display: none !important;
+  }
+
+  .quiz-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    gap: 8px;
+  }
+
+  .btn-back {
+    background-color: var(--bg-item);
+    color: var(--text-white);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 8px 13px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .stats-badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .stat-pill {
+    background-color: var(--bg-item);
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .progress-bar-wrap {
+    width: 100%;
+    height: 7px;
+    background-color: var(--bg-item);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background-color: var(--gold);
+    width: 0%;
+    transition: width 0.25s ease;
+  }
+
+  .quiz-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .question-meta {
+    font-size: 0.82rem;
+    color: var(--gold);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .btn-felix {
+    background-color: var(--felix-bg);
+    border: 1px solid var(--felix);
+    color: var(--felix);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .btn-felix:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: var(--border-subtle);
+    color: var(--text-muted);
+    background-color: var(--bg-item);
+  }
+
+  .question-text {
+    font-size: 1.16rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: var(--text-white);
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .option-btn {
+    width: 100%;
+    text-align: left;
+    background-color: var(--bg-item);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 13px 15px;
+    color: var(--text-white);
+    font-size: 0.96rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    transition: all 0.15s ease;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    background-color: var(--bg-item-hover);
+    border-color: #384d6e;
+  }
+
+  .option-btn:disabled {
+    cursor: default;
+  }
+
+  .option-btn.eliminated {
+    opacity: 0.25;
+    text-decoration: line-through;
+    pointer-events: none;
+  }
+
+  .opt-letter {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background-color: #1e293b;
+    color: var(--gold);
+    font-weight: 800;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .option-btn.correct {
+    border-color: var(--correct);
+    background-color: var(--correct-bg);
+  }
+
+  .option-btn.correct .opt-letter {
+    background-color: var(--correct);
+    color: #052e16;
+  }
+
+  .option-btn.wrong {
+    border-color: var(--wrong);
+    background-color: var(--wrong-bg);
+  }
+
+  .option-btn.wrong .opt-letter {
+    background-color: var(--wrong);
+    color: #fff;
+  }
+
+  .explanation-box {
+    background-color: #111b2d;
+    border-left: 4px solid var(--gold);
+    border-radius: 10px;
+    padding: 13px 14px;
+    font-size: 0.92rem;
+    color: #e2e8f0;
+    margin-bottom: 16px;
+  }
+
+  .explanation-title {
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--gold);
+  }
+
+  /* Results Screen */
+  .results-badge-card {
+    background: linear-gradient(135deg, #172235 0%, #0e1624 100%);
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .results-grade-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .results-grade-val {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  .results-score {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--text-white);
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .results-sub {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    margin-bottom: 18px;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .res-stat-box {
+    background-color: var(--bg-item);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 12px 8px;
+    text-align: center;
+  }
+
+  .res-stat-val {
+    font-size: 1.3rem;
+    font-weight: 800;
+  }
+
+  .res-stat-lbl {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .review-section {
+    margin-bottom: 18px;
+  }
+
+  .review-toggle {
+    background-color: var(--bg-item);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-white);
+    border-radius: 12px;
+    width: 100%;
+    padding: 11px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .review-list {
+    margin-top: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .review-item {
+    background-color: #111a2b;
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+
+  .review-q {
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  .review-ans {
+    color: var(--correct);
+  }
+
+  .btn-group-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- PANTALLA DE CONFIGURACIÓN -->
+  <div id="setup-screen">
+    <div class="card">
+      <div class="header-flex">
+        <h1 class="app-title">⚡ Quiz Harry Potter</h1>
+        <button class="btn-icon" id="btn-audio-toggle" title="Silenciar / Activar sonido">🔊</button>
+      </div>
+
+      <h2 class="section-title">1. Elige los libros</h2>
+      <p class="subtitle">7 libros · 210 preguntas disponibles</p>
+
+      <div class="pill-group">
+        <button class="btn-pill" id="btn-select-all">Seleccionar todos</button>
+        <button class="btn-pill" id="btn-clear-all">Quitar todos</button>
+        <button class="btn-pill" id="btn-clear-mistakes">Borrar fallos guardados</button>
+      </div>
+
+      <div class="book-list" id="book-list"></div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">2. Elige la partida</h2>
+      <p class="subtitle">La selección de libros se mantiene</p>
+
+      <div class="mode-list" id="mode-list">
+        <div class="mode-item selected" data-mode="rapida">
+          <div class="mode-title">⚡ Rápida <span style="font-size:0.75rem; color:var(--gold); margin-left:auto;" id="rec-rapida"></span></div>
+          <div class="mode-desc">20 preguntas mezcladas</div>
+        </div>
+        <div class="mode-item" data-mode="diez">
+          <div class="mode-title">▦ 10 por libro <span style="font-size:0.75rem; color:var(--gold); margin-left:auto;" id="rec-diez"></span></div>
+          <div class="mode-desc">10 preguntas de cada libro elegido</div>
+        </div>
+        <div class="mode-item" data-mode="completa">
+          <div class="mode-title">♜ Completa <span style="font-size:0.75rem; color:var(--gold); margin-left:auto;" id="rec-completa"></span></div>
+          <div class="mode-desc">Las 30 preguntas de cada libro elegido</div>
+        </div>
+        <div class="mode-item" data-mode="supervivencia">
+          <div class="mode-title">🤍 Supervivencia <span style="font-size:0.75rem; color:var(--gold); margin-left:auto;" id="rec-supervivencia"></span></div>
+          <div class="mode-desc">3 vidas; sigue hasta fallar tres veces</div>
+        </div>
+        <div class="mode-item" data-mode="fallos">
+          <div class="mode-title">↻ Repaso de fallos <span style="font-size:0.75rem; color:var(--gold); margin-left:auto;" id="rec-fallos"></span></div>
+          <div class="mode-desc" id="fallos-desc">Repite preguntas que fallaste antes</div>
+        </div>
+      </div>
+
+      <div class="summary-box" id="summary-box"></div>
+
+      <button class="btn-primary" id="btn-start">Empezar partida</button>
+    </div>
+
+    <div class="footer-note">
+      +10 acierto · −3 fallo · Opciones aleatorias · Sistema T.I.M.O. · No oficial
+    </div>
+  </div>
+
+  <!-- PANTALLA DE JUEGO -->
+  <div id="quiz-screen" class="hidden">
+    <div class="quiz-topbar">
+      <button class="btn-back" id="btn-quit">✕ Salir</button>
+      <div class="stats-badges">
+        <span class="stat-pill" id="lives-badge" style="display:none;">❤️❤️❤️</span>
+        <span class="stat-pill">Puntos: <span class="gold-text" id="score-val">0</span></span>
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+
+    <div class="card">
+      <div class="quiz-header-row">
+        <div class="question-meta" id="q-book-label">Libro I</div>
+        <button class="btn-felix" id="btn-felix" title="Descarta 2 opciones incorrectas (−15 pts)">
+          🧪 Felix Felicis (<span id="felix-count">1</span>)
+        </button>
+      </div>
+
+      <div class="question-text" id="q-text"></div>
+      <div class="options-list" id="options-list"></div>
+
+      <div id="explanation-box" class="explanation-box hidden">
+        <div class="explanation-title" id="exp-status"></div>
+        <div id="exp-text"></div>
+      </div>
+
+      <button class="btn-primary hidden" id="btn-next">Siguiente pregunta</button>
+    </div>
+  </div>
+
+  <!-- PANTALLA DE RESULTADOS -->
+  <div id="results-screen" class="hidden">
+    <div class="card">
+      <h2 class="section-title" style="text-align:center;">Partida finalizada</h2>
+      
+      <div class="results-badge-card" style="margin-top:16px;">
+        <div class="results-grade-title">Calificación oficial de Hogwarts</div>
+        <div class="results-grade-val" id="res-grade">EXTRAORDINARIO (E)</div>
+      </div>
+
+      <div class="results-score" id="final-score">0 pts</div>
+      <div class="results-sub" id="final-message">¡Gran trabajo en Hogwarts!</div>
+
+      <div class="results-grid">
+        <div class="res-stat-box">
+          <div class="res-stat-val" style="color:var(--correct);" id="res-correct">0</div>
+          <div class="res-stat-lbl">Aciertos</div>
+        </div>
+        <div class="res-stat-box">
+          <div class="res-stat-val" style="color:var(--wrong);" id="res-wrong">0</div>
+          <div class="res-stat-lbl">Fallos</div>
+        </div>
+        <div class="res-stat-box">
+          <div class="res-stat-val" style="color:var(--gold);" id="res-pct">0%</div>
+          <div class="res-stat-lbl">Precisión</div>
+        </div>
+      </div>
+
+      <div class="review-section" id="review-section" style="display:none;">
+        <button class="review-toggle" id="btn-toggle-review">
+          <span>📋 Repasar fallos de esta partida (<span id="session-wrong-count">0</span>)</span>
+          <span>▼</span>
+        </button>
+        <div class="review-list hidden" id="review-list-content"></div>
+      </div>
+
+      <div class="btn-group-vertical">
+        <button class="btn-primary" id="btn-play-again">Volver a jugar</button>
+        <button class="btn-pill" style="width:100%; padding:14px; font-size:1rem; text-align:center;" id="btn-share">📤 Compartir resultado</button>
+        <button class="btn-pill" style="width:100%; padding:14px; font-size:1rem; text-align:center;" id="btn-back-menu">Cambiar configuración</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const BOOKS_INFO = [
+  { id: 1, roman: "I", title: "La piedra filosofal" },
+  { id: 2, roman: "II", title: "La cámara secreta" },
+  { id: 3, roman: "III", title: "El prisionero de Azkaban" },
+  { id: 4, roman: "IV", title: "El cáliz de fuego" },
+  { id: 5, roman: "V", title: "La Orden del Fénix" },
+  { id: 6, roman: "VI", title: "El misterio del príncipe" },
+  { id: 7, roman: "VII", title: "Las reliquias de la muerte" }
+];
+
+const RAW_QUESTIONS = [
+  // LIBRO 1
+  [1,"¿Qué visión insólita sorprende a Vernon Dursley camino del trabajo?","Un perro que observa las noticias","Un gato negro que lleva una carta","Un gato atigrado que parece estar leyendo un mapa","Una lechuza que llama a una puerta",2,"Vernon ve a un gato atigrado leyendo un mapa; más tarde sabemos que es la profesora McGonagall."],
+  [2,"¿A qué se dedica Grunnings, la empresa que dirige Vernon Dursley?","A vender automóviles","A importar electrodomésticos","A fabricar herramientas mágicas","A fabricar taladros",3,"Grunnings es una empresa fabricante de taladros; el libro no menciona una marca concreta."],
+  [3,"¿Qué sabor resulta tener la gragea que Dumbledore prueba al final del curso?","Cera de oídos","Vómito","Espinacas","Jabón",0,"Dumbledore cree haber escogido una gragea de caramelo, pero descubre que sabe a cera de oídos."],
+  [4,"¿En qué cámara de Gringotts se guardaba la Piedra Filosofal?","En la cámara 711","En la cámara 394","En la cámara 687","En la cámara 713",3,"Hagrid retira de la cámara 713 el pequeño paquete que contiene la Piedra."],
+  [5,"¿Qué reciben los alumnos de Smeltings como parte de su uniforme escolar?","Varas de madera nudosa para golpearse cuando los profesores no miran","Bastones de metal con el escudo del colegio","Palos de críquet grabados con sus nombres","Varitas decorativas sin poderes",0,"Las varas nudosas forman parte de las peculiares costumbres de Smeltings."],
+  [6,"¿Quién entrega personalmente a Harry su carta de Hogwarts en la cabaña de la roca?","Rubeus Hagrid","Una lechuza mensajera","Minerva McGonagall","Albus Dumbledore",0,"Hagrid irrumpe en la cabaña y pone por fin la carta en manos de Harry."],
+  [7,"¿Qué regalo de cumpleaños compra Hagrid para Harry en el Callejón Diagon?","Una lechuza blanca","Un juego de calderos de plata","Una varita de acebo","Un sapo",0,"Hagrid compra a Hedwig como regalo por el undécimo cumpleaños de Harry."],
+  [8,"¿De qué sabores es el helado que Hagrid compra a Harry en el Callejón Diagon?","Limón y vainilla","Fresa y cacahuete","Chocolate y frambuesa con nueces picadas","Menta y chocolate",2,"El primer helado de Harry en el mundo mágico combina chocolate, frambuesa y nueces."],
+  [9,"¿En qué estación deja Hagrid a Harry después de comprar el material escolar?","En Victoria, para reunirse con los Dursley","En Charing Cross, frente al Caldero Chorreante","En King's Cross, junto al andén nueve y tres cuartos","En Paddington, para que tome el tren de regreso a casa",3,"Tras recorrer el Callejón Diagon, Hagrid acompaña a Harry hasta Paddington."],
+  [10,"¿Cuál es la primera contraseña de la torre de Gryffindor que conoce Harry?","Hocico de cerdo","Fortuna Major","Sangre pura","Caput Draconis",3,"Percy pronuncia Caput Draconis ante el retrato de la Señora Gorda."],
+  [11,"¿Qué mago aparece en el primer cromo de rana de chocolate que obtiene Harry?","Merlín","Albus Dumbledore","Nicolas Flamel","Godric Gryffindor",1,"El cromo de Dumbledore aporta después la pista decisiva sobre Nicolas Flamel."],
+  [12,"¿Quién es la primera alumna llamada por el Sombrero Seleccionador?","Millicent Bulstrode","Hannah Abbott","Mandy Brocklehurst","Susan Bones",1,"La selección comienza por orden alfabético con Abbott, Hannah."],
+  [13,"¿Cómo interpretan los alumnos el himno de Hogwarts tras la selección?","Cada cual lo canta con la melodía que prefiere","Solo lo interpreta el coro de fantasmas","Lo cantan con la melodía del himno británico","Todos siguen una marcha dirigida por Flitwick",0,"Dumbledore permite que cada persona elija su propia melodía, con un resultado bastante caótico."],
+  [14,"¿Dónde y a qué hora propone Malfoy el duelo con Harry?","A medianoche, en la sala de trofeos","A medianoche, en la lechucería","A las once, en el campo de quidditch","A la una, en las mazmorras",0,"El supuesto duelo en la sala de trofeos resulta ser una trampa de Malfoy."],
+  [15,"¿Qué le ocurre a Neville durante su primera clase de vuelo?","Su escoba se eleva sin control y él cae y se rompe la muñeca","Pierde a Trevor sobre el castillo","Aterriza dentro del Bosque Prohibido","Choca contra la profesora Hooch",0,"Neville despega antes de la señal, pierde el control y termina en la enfermería."],
+  [16,"¿Quién hace llegar a Harry su Nimbus 2000?","Albus Dumbledore","Oliver Wood","Sirius Black","La profesora McGonagall",3,"McGonagall lo incorpora al equipo y organiza la entrega de la escoba."],
+  [17,"¿Qué posición ocupa Oliver Wood en el equipo de quidditch de Gryffindor?","Buscador y capitán","Cazador","Guardián y capitán","Golpeador",2,"Wood protege los aros y dirige al equipo."],
+  [18,"¿Cómo se contempla Ron en el Espejo de Oesed?","Como Premio Anual y capitán de quidditch, sosteniendo las dos copas","Como campeón del Torneo de los Tres Magos","Como el alumno más rico de Hogwarts","Como Ministro de Magia",0,"Ron desea destacar entre sus hermanos y se ve sosteniendo la Copa de las Casas y la de quidditch."],
+  [19,"¿Qué libro concreto busca Harry en la sección prohibida para investigar a Nicolas Flamel?","Alquimia a través de los siglos","Los grandes magos del siglo XX","Ninguno en particular: revisa libros al azar y uno de ellos grita","Historia de la magia",2,"Harry aún no sabe qué volumen necesita y abre un libro que lanza un grito terrible."],
+  [20,"¿Cómo llama Hagrid al Ridgeback noruego que cría en su cabaña?","Fang","Colacuerno","Norberto","Aragog",2,"Hagrid pone al dragón el nombre de Norberto; años después se descubre que es hembra."],
+  [21,"¿Quiénes se llevan a Norberto para trasladarlo a Rumanía?","El profesor Kettleburn y Hagrid","Unos amigos de Charlie Weasley","Dumbledore mediante un traslador","Bill Weasley y dos duendes",1,"Los amigos de Charlie recogen al dragón en lo alto de la torre de Astronomía."],
+  [22,"¿Cuántos puntos pierde Gryffindor por Harry, Hermione y Neville la noche de Norberto?","Cien puntos","Doscientos puntos","Ciento cincuenta puntos","Cincuenta puntos",2,"McGonagall les quita cincuenta puntos a cada uno: ciento cincuenta en total."],
+  [23,"¿Qué centauro salva a Harry de la figura encapuchada del Bosque Prohibido?","Magorian","Firenze","Bane","Ronan",1,"Firenze carga a Harry sobre su lomo y lo aleja de la criatura que bebe sangre de unicornio."],
+  [24,"¿Qué instrumento utiliza Quirrell para mantener dormido a Fluffy?","Una caja de música","Un arpa encantada","Un laúd","Una flauta de madera",1,"Cuando el trío llega, el arpa de Quirrell sigue tocando por sí sola."],
+  [25,"¿Cuál de las defensas de la Piedra fue preparada por el profesor Flitwick?","El acertijo de pociones","Las llaves aladas","El ajedrez mágico","El lazo del diablo",1,"Flitwick encantó las llaves; Sprout, McGonagall y Snape prepararon otras pruebas."],
+  [26,"¿Qué pieza sustituye Harry en la partida de ajedrez gigante?","Una torre","Un alfil","El rey","Un caballo",1,"Harry ocupa el puesto de un alfil, Hermione el de una torre y Ron el de un caballo."],
+  [27,"¿Cuántas botellas forman el acertijo de pociones de Snape?","Once","Cinco","Nueve","Siete",3,"Entre las siete botellas hay venenos, vino y las dos pociones que permiten avanzar o retroceder."],
+  [28,"¿Qué permite hacer la poción contenida en la botella más pequeña?","Apagar las dos barreras de fuego","Despertar a quien la beba","Atravesar las llamas negras y avanzar","Regresar a través de las llamas violetas",2,"Hermione deduce que la botella más pequeña permite continuar hacia la última cámara."],
+  [29,"¿Por qué Quirrell se quema al tocar a Harry?","Porque las varitas de ambos son gemelas","Por un escudo lanzado por Dumbledore","Porque Harry lleva la Piedra Filosofal","Por la protección nacida del sacrificio de Lily Potter",3,"El amor y el sacrificio de Lily dejan en Harry una protección que Quirrell y Voldemort no pueden soportar."],
+  [30,"¿Cuántos puntos concede Dumbledore a Neville al final del curso?","Cincuenta puntos","Diez puntos","Cinco puntos","Veinte puntos",1,"Los diez puntos por enfrentarse a sus amigos dan a Gryffindor la victoria final."],
+
+  // LIBRO 2
+  [31,"¿Cómo asusta Harry a Dudley mientras trabajan en el jardín?","Hace aparecer una serpiente de juguete","Dice haber visto un basilisco","Le asegura que Dobby está escondido entre las plantas","Finge lanzar un hechizo contra el seto con palabras inventadas",3,"Harry pronuncia unas palabras sin sentido y simula que va a incendiar mágicamente el seto."],
+  [32,"¿Qué miserable regalo navideño envían los Dursley a Harry durante su segundo curso?","Una percha rota","Cinco peniques","Un palillo de dientes","Un calcetín viejo",2,"El regalo de los Dursley es un único palillo acompañado de una nota."],
+  [33,"¿Qué postre hace caer Dobby durante la cena con los Mason?","Una gran preparación de crema batida y violetas cristalizadas","Un merengue de limón","Un pudín de chocolate","Una tarta de manzana y canela",0,"Dobby eleva el postre de Petunia y lo deja caer para provocar un desastre."],
+  [34,"¿Qué coche encanta Arthur Weasley para que pueda volar?","Un Morris Minor verde","Un Ford Anglia azul turquesa","Un Vauxhall Viva negro","Un Austin Mini rojo",1,"El Ford Anglia familiar rescata a Harry y después acaba viviendo en el Bosque Prohibido."],
+  [35,"¿Qué criaturas expulsan Harry y los Weasley del jardín de La Madriguera?","Duendecillos de Cornualles","Gorros Rojos","Erklings","Gnomos de jardín",3,"Desgnomizar consiste en marearlos y lanzarlos fuera del terreno."],
+  [36,"¿Dónde aparece Harry al pronunciar mal su destino mediante la Red Flu?","En el Caldero Chorreante","En Borgin y Burkes, en el Callejón Knockturn","En la tienda de Ollivander","En Gringotts",1,"La pronunciación confusa de Harry lo lleva a la siniestra tienda del Callejón Knockturn."],
+  [37,"¿Qué propiedad tiene la Mano de la Gloria que Draco admira en Borgin y Burkes?","Alumbra únicamente a quien la sostiene","Abre cerraduras sin utilizar una varita","Señala objetos malditos","Atrapa a cualquiera que la toque",0,"Borgin la describe como una aliada perfecta para ladrones y saqueadores."],
+  [38,"¿Cuál de estos títulos de Lockhart aparece en la lista de libros de segundo curso?","Paseos por el Callejón Knockturn","Defensa mágica para principiantes","Manual práctico contra las artes oscuras","Una vuelta con los espíritus malignos",3,"Una vuelta con los espíritus malignos es uno de los numerosos libros autobiográficos de Lockhart."],
+  [39,"¿Qué aniversario celebra Nick Casi Decapitado en Halloween?","El cuarto centenario de su muerte","El sexto centenario de su decapitación","El quingentésimo aniversario de su muerte","Su milésimo cumpleaños",2,"Nick invita al trío a la fiesta de sus quinientos años de muerte."],
+  [40,"¿Quién dirige el Club de Cazadores Sin Cabeza que rechaza a Nick?","Sir Patrick Delaney-Podmore","Sir Nicholas de Mimsy-Porpington","El Barón Sanguinario","Sir Cadogan",0,"Sir Patrick considera que Nick no está suficientemente decapitado para entrar en el club."],
+  [41,"¿Qué alimentos destacan en el banquete de la fiesta de fantasmas?","Pescado podrido y pasteles quemados","Carne cruda y sopa helada","Vísceras secas y vino rancio","Manzanas con gusanos y pan mohoso",0,"La comida está descompuesta para que los fantasmas puedan percibirla mejor al atravesarla."],
+  [42,"¿Quién es la primera víctima petrificada por el basilisco durante el curso?","Colin Creevey","Justin Finch-Fletchley","Hermione Granger","La señora Norris",3,"La gata de Filch aparece colgada junto al primer mensaje de la Cámara."],
+  [43,"¿Qué utiliza Ginny para escribir los mensajes de la Cámara en las paredes?","Pintura","Zumo de bayas mágicas","Sangre de gallo","Tinta negra indeleble",0,"En el recuerdo del diario, Riddle alude a la pintura que Ginny llevaba sobre la ropa."],
+  [44,"¿Por qué Ginny mata los gallos de Hagrid mientras está bajo el control del diario?","Porque su sangre abre la Cámara","Porque el canto del gallo es mortal para el basilisco","Para alimentar a Aragog","Porque los gallos podían descubrir a Riddle",1,"Eliminar los gallos protege al basilisco de uno de sus pocos enemigos naturales."],
+  [45,"¿Quién explica en clase la leyenda de la Cámara de los Secretos?","El profesor Binns","Severus Snape","La profesora McGonagall","El profesor Flitwick",0,"La insistencia de Hermione consigue que Binns abandone por un momento su lección habitual."],
+  [46,"¿Qué escobas proporciona Lucius Malfoy al equipo de Slytherin?","Saetas de Fuego","Barredoras 7","Estrellas Fugaces","Nimbus 2001",3,"La donación coincide con la entrada de Draco en el equipo como buscador."],
+  [47,"¿Qué criaturas libera Lockhart durante su primera clase práctica?","Diablillos de Devon","Kappas","Duendecillos de Cornualles","Boggarts",2,"Los duendecillos destrozan el aula y Lockhart pierde enseguida el control."],
+  [48,"¿Qué palabras pronuncia Lockhart para intentar dominar a los duendecillos?","Immobilus Maxima","Vipera Evanesca","Riddikulus","Peskipiksi Pesternomi",3,"La disparatada fórmula de Lockhart no produce ningún efecto."],
+  [49,"¿Qué ingredientes sustraen Hermione, Harry y Ron del despacho de Snape?","Sangre de salamandra y ojos de anguila","Raíz de mandrágora y asfódelo","Crisopos y sanguijuelas","Piel de serpiente arbórea africana y cuerno de bicornio",3,"Son los ingredientes más difíciles de conseguir de la poción Multijugos."],
+  [50,"¿Por qué Hermione adquiere rasgos de gato al tomar la poción Multijugos?","La poción se prepara durante pocos días","Confunde un pelo de gato con uno de Millicent Bulstrode","Añade demasiado cuerno de bicornio","Snape había encantado los ingredientes",1,"La poción no está pensada para transformaciones entre especies y Hermione queda parcialmente felina."],
+  [51,"¿Con qué conjuro desarma Snape a Lockhart en el Club de Duelo?","Stupefy","Rictusempra","Expelliarmus","Tarantallegra",2,"Snape lanza Expelliarmus y proyecta a Lockhart al otro extremo de la sala."],
+  [52,"¿Qué hechizo utiliza Draco para hacer aparecer una serpiente?","Engorgio","Serpensortia","Vipera Evanesca","Oppugno",1,"La serpiente provoca que Harry revele ante todos que puede hablar pársel."],
+  [53,"¿Cuál es la contraseña del despacho de Dumbledore durante el segundo curso?","Meigas fritas","Sorbete de limón","Pastilla de limón","Cucurucho de cucarachas",1,"McGonagall pronuncia Sorbete de limón ante la gárgola que guarda la escalera."],
+  [54,"¿Cómo se llama la acromántula que Hagrid crió cuando era estudiante?","Grawp","Fang","Aragog","Mosag",2,"Tom Riddle culpó injustamente a Aragog de ser el monstruo de la Cámara."],
+  [55,"¿Dónde encuentra Harry por primera vez el diario de Tom Riddle?","En el despacho de Filch","En el baño inundado de Myrtle la Llorona","En la biblioteca","En la sala común de Slytherin",1,"Ginny arroja el diario al baño al descubrir que Harry sospecha de él."],
+  [56,"¿Qué cargo tenía Tom Riddle cuando denunció a Hagrid cincuenta años antes?","Era capitán de quidditch","Era Premio Anual","Era prefecto de Slytherin","Era ayudante del director",2,"Riddle era un alumno modélico y prefecto cuando utilizó a Hagrid como chivo expiatorio."],
+  [57,"¿A qué prisión envían preventivamente a Hagrid?","A Nurmengard","A Azkaban","A la Torre de Londres","A los calabozos del Ministerio",1,"Fudge ordena su ingreso en Azkaban para aparentar que el Ministerio está actuando."],
+  [58,"¿Qué lleva Fawkes hasta la Cámara de los Secretos?","El Sombrero Seleccionador","Una varita de repuesto","Una botella de lágrimas de fénix","La espada de Gryffindor en sus garras",0,"Fawkes lleva el Sombrero; Harry extrae de su interior la espada de Gryffindor."],
+  [59,"¿Cómo destruye Harry el diario de Tom Riddle?","Lo corta con la espada de Gryffindor","Utiliza el hechizo Reducto","Lo atraviesa con un colmillo del basilisco","Le lanza fuego maldito",2,"El veneno del colmillo destruye el diario y la manifestación de Riddle."],
+  [60,"¿Cómo consigue Harry que Lucius Malfoy entregue ropa a Dobby?","Envuelve el diario con su corbata","Oculta un guante dentro de la túnica de Lucius","Mete el diario dentro de su calcetín y Lucius tira después el calcetín","Hace que Dumbledore entregue una bufanda a Dobby",2,"Lucius arranca el calcetín del diario y lo arroja; Dobby lo recoge y queda libre."],
+
+  // LIBRO 3
+  [61,"¿Sobre qué tema escribe Harry a escondidas al comienzo de las vacaciones?","El Estatuto Internacional del Secreto","La inutilidad de quemar brujas en el siglo XIV","La rebelión de los duendes de 1612","Las guerras de gigantes",1,"Harry redacta de noche un trabajo de Historia de la Magia sobre las quemas de brujas medievales."],
+  [62,"¿Qué bruja medieval disfrutaba tanto de las hogueras que se dejó capturar cuarenta y siete veces?","Wendelin la Hechicera","Babayaga","Ethelreda la Excéntrica","Morgana le Fay",0,"Wendelin utilizaba un encantamiento congelador de llamas y fingía que el fuego le hacía daño."],
+  [63,"¿Cómo se llama el bulldog preferido de tía Marge?","Hércules","Bruto","Destripador","Colmillo",2,"Destripador ya había perseguido a Harry hasta hacerlo subir a un árbol."],
+  [64,"¿Quiénes conducen y cobran los billetes en el Autobús Noctámbulo?","Arthur Weasley y Mundungus Fletcher","Amos Diggory y Bob Ogden","Ernie Prang y Stan Shunpike","Cornelius Fudge y Kingsley Shacklebolt",2,"Ernie conduce y Stan actúa como cobrador del vertiginoso autobús mágico."],
+  [65,"¿Qué nombre falso da Harry al subir al Autobús Noctámbulo?","Seamus Finnigan","Neville Longbottom","Ron Weasley","Dean Thomas",1,"Harry teme que lo reconozcan tras haber inflado a tía Marge."],
+  [66,"¿En qué habitación del Caldero Chorreante se aloja Harry antes de comenzar el curso?","En la habitación trece","En la habitación siete","En la habitación veintiuno","En la habitación once",3,"Fudge organiza su estancia en la habitación once durante las semanas previas a Hogwarts."],
+  [67,"¿Cuánto gana Arthur Weasley en el Gran Premio Anual de Galeones de El Profeta?","Setecientos galeones","Mil galeones","Quinientos galeones","Doscientos cincuenta galeones",0,"El premio de setecientos galeones permite a la familia viajar a Egipto."],
+  [68,"¿Qué demuestra Crookshanks al desconfiar de Scabbers desde el principio?","Que percibe que Scabbers no es una rata corriente","Que teme a todos los animales pequeños","Que está obedeciendo órdenes de Lupin","Que reconoce en él a Sirius Black",0,"Crookshanks reconoce el engaño de Pettigrew y colabora con Sirius para atraparlo."],
+  [69,"¿Qué reparte Lupin después del encuentro con el dementor en el tren?","Caramelos de limón","Zumo de calabaza caliente","Poción pimentónica","Trozos de una enorme tableta de chocolate",3,"El chocolate ayuda a aliviar los efectos de la presencia de los dementores."],
+  [70,"¿Cómo se llama el hipogrifo que permite montar a Harry en la primera clase de Hagrid?","Goliat","Fang","Norberto","Buckbeak",3,"Harry se inclina ante Buckbeak, obtiene su respeto y vuela sobre él."],
+  [71,"¿Qué forma adopta el boggart ante Parvati Patil?","Una cobra gigantesca","Una banshee","Un payaso sin rostro","Una momia ensangrentada",3,"En la novela, el miedo de Parvati se manifiesta como una momia."],
+  [72,"¿Qué aspecto toma el boggart cuando llega el turno de Lupin?","El cadáver de James Potter","Un dementor","Un globo blanco plateado que representa la luna llena","Un hombre lobo",2,"Los alumnos ven un orbe plateado; después se comprende que representa la luna llena."],
+  [73,"¿Qué retrato sustituye a la Señora Gorda después del ataque de Sirius?","El Barón Sanguinario","La Dama Gris","Sir Cadogan y su pony","Phineas Nigellus Black",2,"Sir Cadogan es el único retrato dispuesto a asumir la peligrosa tarea."],
+  [74,"¿Cuál de estas contraseñas utiliza Sir Cadogan durante las vacaciones de Navidad?","Caput Draconis","Fortuna Major","Vástagos de la nada","Vil bellaco",3,"Sir Cadogan inventa contraseñas complicadas y las cambia al menos dos veces al día."],
+  [75,"¿Dónde desemboca el pasadizo abierto desde la estatua de la bruja tuerta?","En la bodega de Las Tres Escobas","En la Casa de los Gritos","En el sótano de Honeydukes","En la lechucería de Hogsmeade",2,"El conjuro Dissendium abre el túnel que termina bajo Honeydukes."],
+  [76,"¿Quién entrega a Harry el Mapa del Merodeador?","Sirius Black","Remus Lupin","Albus Dumbledore","Fred y George Weasley",3,"Los gemelos consideran que Harry necesita el mapa más que ellos."],
+  [77,"¿En qué orden aparecen los cuatro autores del Mapa del Merodeador?","Canuto, Lunático, Cornamenta y Colagusano","Lunático, Colagusano, Canuto y Cornamenta","Cornamenta, Canuto, Colagusano y Lunático","Lunático, Cornamenta, Canuto y Colagusano",1,"Los apodos corresponden a Lupin, Pettigrew, Sirius y James, en ese orden."],
+  [78,"¿Qué animal era James Potter, Cornamenta, cuando adoptaba su forma de animago?","Un lobo","Un caballo","Un ciervo macho","Un perro negro",2,"Las astas del ciervo explican el apodo Cornamenta y la forma del Patronus de Harry."],
+  [79,"¿Cómo responde el Mapa del Merodeador cuando Snape intenta obligarlo a revelar sus secretos?","Cada uno de sus cuatro autores escribe un insulto dirigido a Snape","Se borra por completo","Repite el conjuro Riddikulus","Proyecta la imagen de un hombre lobo",0,"Lunático, Colagusano, Canuto y Cornamenta dejan mensajes personalizados para Snape."],
+  [80,"¿Quién envía anónimamente a Harry la Saeta de Fuego?","Remus Lupin","Sirius Black","Minerva McGonagall","Albus Dumbledore",1,"Sirius revela al final que encargó la escoba a nombre de Harry, pero hizo cargar el pago a su propia cámara de Gringotts."],
+  [81,"¿Por qué confisca McGonagall la Saeta de Fuego?","Para comprobar que Sirius no la ha embrujado","Porque los alumnos de tercero no pueden tener escobas de competición","Porque pertenece legalmente al equipo","Porque Harry la utiliza para ir a Hogsmeade",0,"La escoba se desmonta y examina en busca de maleficios."],
+  [82,"¿De qué materiales está hecha la Saeta de Fuego?","Mango de fresno y ramitas de abedul en la cola","Mango de caoba y cola de roble","Mango de ébano y cola de tejo","Mango de sauce y cola de avellano",0,"Su publicidad destaca el fresno del mango y las ramitas de abedul seleccionadas a mano."],
+  [83,"¿Qué sentencia recibe Buckbeak por herir a Draco Malfoy?","Una multa de cincuenta galeones para Hagrid","Muerte por decapitación","Traslado a una reserva","Destierro al Bosque Prohibido",1,"La influencia de Lucius Malfoy consigue que el comité imponga la pena de muerte."],
+  [84,"¿Quién es el verdugo enviado por el Ministerio para ejecutar a Buckbeak?","Antonin Dolohov","Augustus Rookwood","Thorfinn Rowle","Walden Macnair",3,"Macnair llega a Hogwarts con una gran hacha para cumplir la sentencia."],
+  [85,"¿Qué cultivo de Hagrid ha alcanzado un tamaño descomunal junto a su cabaña?","Los repollos chinos mordedores","Las calabazas","Las ortigas secas","Las mandrágoras",1,"Las calabazas de Hagrid son tan grandes que sugieren la ayuda de un encantamiento aumentador."],
+  [86,"¿Qué objeto permite a Hermione asistir a varias clases que coinciden en el horario?","Un giratiempo","Un traslador","Una capa de duplicación","Un espejo de dos direcciones",0,"McGonagall obtiene autorización especial para que Hermione utilice el giratiempo."],
+  [87,"¿Por qué se plantó originalmente el Sauce Boxeador?","Para cerrar una entrada de la Cámara de los Secretos","Para proteger Hogwarts de Sirius Black","Para impedir que los alumnos entrasen en el bosque","Para ocultar el pasadizo utilizado por Lupin durante sus transformaciones",3,"El túnel conduce a la Casa de los Gritos, donde Lupin podía transformarse lejos de los demás."],
+  [88,"¿Qué rasgo de Scabbers coincide con la prueba que Peter Pettigrew dejó tras fingir su muerte?","Tiene los ojos de distinto color","Tiene una cicatriz en forma de estrella","Le falta un dedo en una pata delantera","Carece de cola",2,"Pettigrew se cortó un dedo antes de escapar y su forma de rata conserva esa mutilación."],
+  [89,"¿Qué forma completa adopta el Patronus de Harry junto al lago?","Una cierva","Un ciervo macho","Un perro negro","Un fénix",1,"El Patronus corpóreo de Harry tiene la misma forma que el animago de su padre."],
+  [90,"¿Cómo escapan Sirius y Buckbeak al final de la novela?","Escapan por la Red Flu de la enfermería","Utilizan el pasadizo de Honeydukes","Sirius monta a Buckbeak y vuela desde la torre donde estaba encerrado","Se desaparecen desde el Bosque Prohibido",2,"Harry y Hermione liberan a Sirius del despacho de Flitwick, en la torre oeste, y Buckbeak se lo lleva volando."],
+
+  // LIBRO 4
+  [91,"¿Cómo se llama el anciano jardinero de la mansión de los Riddle?","Frank Bryce","Tom Riddle padre","Bob Ogden","Amos Diggory",0,"Frank Bryce descubre a Voldemort y Colagusano en la casa abandonada y es asesinado."],
+  [92,"¿Qué dulce encantado dejan caer Fred y George para que lo coma Dudley?","Un turrón sangrasangre","Un caramelo longilinguo","Una píldora vomitiva","Un bombón de desmayo",1,"El caramelo hace que la lengua de Dudley crezca de manera desmesurada."],
+  [93,"¿Qué objeto sirve de traslador para viajar al Mundial de quidditch?","Una lata oxidada","Un neumático","Una vieja bota embarrada","Un guante de portero",2,"La bota espera en Stoatshead Hill y transporta al grupo hasta el campamento."],
+  [94,"¿Qué selecciones disputan la final del Mundial de quidditch?","Inglaterra y Transilvania","Bulgaria y Escocia","Irlanda y Bulgaria","Irlanda y Perú",2,"Irlanda domina el marcador, mientras que Bulgaria cuenta con Viktor Krum como buscador."],
+  [95,"¿Qué criaturas son las mascotas de la selección búlgara?","Arpías","Sirenas","Veelas","Esfinges",2,"El baile de las veelas cautiva a buena parte del público y hasta al árbitro."],
+  [96,"¿Quién captura la Snitch y qué selección gana la final?","Krum captura la Snitch y Bulgaria gana","Lynch captura la Snitch e Irlanda gana","Moran captura la Snitch e Irlanda gana","Krum captura la Snitch, pero Irlanda gana 170 a 160",3,"Krum termina el partido sabiendo que Bulgaria no puede remontar, e Irlanda vence por diez puntos."],
+  [97,"¿Cómo se llama la elfa doméstica encontrada con la varita de Harry tras los disturbios?","Dobby","Winky","Hokey","Mipsy",1,"Winky pertenece a Barty Crouch y aparece en el lugar donde se lanzó la Marca Tenebrosa."],
+  [98,"¿Qué significan las siglas P.E.D.D.O. en la asociación de Hermione?","Promoción de Elfos Domésticos y Derechos Oficiales","Patronato Élfico para el Desarrollo y la Dignidad Obrera","Protección de Elfos Domésticos Desamparados y Oprimidos","Plataforma Élfica de Defensa de los Derechos Obreros",3,"Hermione crea P.E.D.D.O. para promover salarios, libertad y mejores condiciones para los elfos."],
+  [99,"¿Cuánto cuesta afiliarse inicialmente a P.E.D.D.O.?","Un galeón","Dos sickles","Diez sickles","Cinco knuts",1,"La cuota de dos sickles incluye una insignia de la organización."],
+  [100,"¿Cuáles son las tres Maldiciones Imperdonables?","Sectumsempra, Crucio y Morsmordre","Imperius, Cruciatus y Avada Kedavra","Imperio, Expelliarmus y Avada Kedavra","Reducto, Cruciatus y fuego maldito",1,"El falso Moody demuestra en clase las maldiciones de control, tortura y muerte."],
+  [101,"¿Sobre qué animales demuestra el falso Moody las Maldiciones Imperdonables?","Escorpiones mágicos","Ratas blancas","Sapos del pantano","Tres grandes arañas negras",3,"Cada una de las tres arañas sirve para demostrar una maldición distinta."],
+  [102,"¿Qué escuela llega a Hogwarts en un enorme carruaje tirado por caballos alados?","Beauxbatons","Durmstrang","Mahoutokoro","Ilvermorny",0,"La delegación de Beauxbatons viaja en un carruaje tirado por grandes Abraxan."],
+  [103,"¿Qué edad mínima establece Dumbledore para participar en el Torneo de los Tres Magos?","Diecisiete años","Dieciséis años","Haber comenzado sexto curso","Dieciocho años",0,"La línea de edad impide que los menores de diecisiete años introduzcan su nombre."],
+  [104,"¿A quién elige el Cáliz como campeón oficial de Hogwarts?","Angelina Johnson","Roger Davies","Cedric Diggory","Harry Potter",2,"Cedric es el campeón legítimamente seleccionado antes de que aparezca el nombre de Harry."],
+  [105,"¿Qué dragón debe superar Harry en la primera prueba?","Un Colacuerno Húngaro","Un Bola de Fuego Chino","Un Hocicocorto Sueco","Un Galés Verde Común",0,"Harry extrae la miniatura del temible Colacuerno Húngaro durante el sorteo."],
+  [106,"¿Qué dragón corresponde a Fleur Delacour?","Un Ridgeback Noruego","Un Bola de Fuego Chino","Un Galés Verde Común","Un Colacuerno Húngaro",2,"Fleur adormece al Galés Verde, aunque el dragón incendia parte de su falda."],
+  [107,"¿Qué dragón corresponde a Viktor Krum?","Un Colacuerno Húngaro","Un Bola de Fuego Chino","Un Hocicocorto Sueco","Un Galés Verde Común",1,"Krum utiliza un hechizo conjuntivitis contra el Bola de Fuego Chino."],
+  [108,"¿Con quién asiste Hermione al Baile de Navidad?","Con Harry Potter","Con Ron Weasley","Con Viktor Krum","Con Neville Longbottom",2,"Hermione sorprende a sus amigos al aparecer como pareja del campeón de Durmstrang."],
+  [109,"¿Qué grupo toca durante el Baile de Navidad?","Las Arpías de Caerphilly","La Banda de Celestina Warbeck","Los Duendes del Destino","Las Brujas de Macbeth",3,"Las Brujas de Macbeth son el popular grupo contratado para amenizar el baile."],
+  [110,"¿Qué consejo da Cedric a Harry para descubrir la pista del huevo?","Calentarlo con fuego de dragón","Llevarlo a la biblioteca de noche","Tomar un baño con el huevo en el baño de los prefectos","Abrirlo en la orilla del Lago Negro",2,"En el baño, Myrtle conduce a Harry a abrir el huevo bajo el agua."],
+  [111,"¿Quién entrega a Harry las branquialgas antes de la segunda prueba?","Hermione Granger","Neville Longbottom","Alastor Moody","Dobby",3,"El falso Moody conduce indirectamente a Dobby hasta la solución que Harry necesita."],
+  [112,"¿A quién debe rescatar Harry del fondo del Lago Negro?","A Ginny Weasley","A Hermione Granger","A Cho Chang","A Ron Weasley",3,"Ron representa aquello que los jueces consideran más valioso para Harry."],
+  [113,"¿Por qué Fleur no consigue rescatar a Gabrielle durante la segunda prueba?","Una sirena la conduce al lugar equivocado","Los grindylows la obligan a retirarse","Krum la saca del agua por error","Pierde las branquialgas",1,"Fleur abandona la prueba tras ser atacada; Harry libera a Gabrielle además de a Ron."],
+  [114,"¿Qué criatura plantea un acertijo a Harry en el laberinto?","Una esfinge","Una quimera","Un grifo","Una mantícora",0,"La esfinge bloquea el camino y deja pasar a Harry cuando resuelve su acertijo."],
+  [115,"¿Cuál es la solución del acertijo de la esfinge?","Muerte","Araña","Fuego","Oscuridad",1,"Las distintas partes del acertijo forman la palabra araña."],
+  [116,"¿Quién mata a Cedric Diggory obedeciendo la orden de Voldemort?","Peter Pettigrew, utilizando la varita de Voldemort","Lucius Malfoy","Barty Crouch hijo","Voldemort con su propia mano",0,"Voldemort ordena matar al otro y Colagusano lanza Avada Kedavra."],
+  [117,"¿Qué tres elementos forman el ritual con el que Voldemort recupera su cuerpo?","Corazón de dragón, piel de serpiente y sangre de unicornio","Veneno de serpiente, pelo de veela y sangre pura","Veneno de basilisco, lágrimas de fénix y hueso de gigante","Hueso del padre, carne del vasallo y sangre del enemigo",3,"El ritual exige el hueso tomado sin permiso, la carne entregada voluntariamente y la sangre tomada por la fuerza."],
+  [118,"¿Cómo se llama el fenómeno que conecta las varitas de Harry y Voldemort?","Priori Incantatem","Avada Reversum","Nexo de Horrocrux","Morsmordre",0,"Los núcleos gemelos provocan el efecto del encantamiento inverso."],
+  [119,"¿Quién se hizo pasar por Alastor Moody durante todo el curso?","Barty Crouch hijo","Igor Karkarov","Peter Pettigrew","Regulus Black",0,"Crouch hijo mantiene la apariencia de Moody gracias a la poción Multijugos."],
+  [120,"¿Qué hace Harry con los mil galeones del premio del Torneo?","Los deposita en la cámara de los Diggory","Los dona a P.E.D.D.O.","Compra una escoba nueva para Ron","Se los entrega a Fred y George para financiar su tienda",3,"Harry no quiere conservar el dinero y lo convierte en el capital inicial de Sortilegios Weasley."],
+
+  // LIBRO 5
+  [121,"¿Quién confiesa haber enviado a los dementores que atacan a Harry y Dudley?","Cornelius Fudge","Lucius Malfoy","Bellatrix Lestrange","Dolores Umbridge",3,"Umbridge reconoce que envió a los dementores para desacreditar o expulsar a Harry."],
+  [122,"¿Quién presencia el ataque y declara como testigo en el juicio de Harry?","Arabella Figg","Amelia Bones","Albus Dumbledore","Mundungus Fletcher",0,"La vecina de los Dursley revela que es una squib vinculada a la Orden."],
+  [123,"¿Cuál es la dirección del cuartel general de la Orden del Fénix?","Número 4 de Privet Drive, Little Whinging","Número 12 de Grimmauld Place, Londres","Número 7 de Godric's Hollow","Número 93 del Callejón Diagon",1,"La casa ancestral de los Black permanece oculta mediante el encantamiento Fidelio."],
+  [124,"¿Cómo se llama el elfo doméstico de la familia Black?","Winky","Dobby","Kreacher","Hokey",2,"Kreacher lleva décadas sirviendo en el número 12 de Grimmauld Place."],
+  [125,"¿Quién aparece en el retrato que insulta a quienes pasan por el vestíbulo de Grimmauld Place?","Bellatrix Lestrange","Andromeda Tonks","Walburga Black, la madre de Sirius","Phineas Nigellus Black",2,"El retrato de Walburga grita insultos contra mestizos y traidores a la sangre."],
+  [126,"¿Qué criaturas eliminan de las cortinas del salón de Grimmauld Place?","Doxies","Gorros Rojos","Boggarts","Gnomos de alfombra",0,"Las hadas mordedoras son aturdidas con Doxicide durante la limpieza de la casa."],
+  [127,"¿Qué integrante de la Orden es metamorfomaga y prefiere que la llamen por su apellido?","Tonks","Molly Weasley","Hestia Jones","Emmeline Vance",0,"Nymphadora Tonks puede modificar su aspecto a voluntad y detesta su nombre de pila."],
+  [128,"¿Dónde se celebra finalmente el juicio disciplinario de Harry?","En una sala del Departamento de Misterios","En el despacho de Cornelius Fudge","En el atrio del Ministerio","En el Tribunal número diez, en el nivel más profundo del Ministerio",3,"El juicio se traslada a última hora al Tribunal número diez, situado en las mazmorras."],
+  [129,"¿Qué frase debe escribir Harry con la pluma de sangre de Umbridge?","No debo decir mentiras","Debo obedecer a mis profesores","Voldemort no ha vuelto","El Ministerio no comete errores",0,"La pluma graba las mismas palabras en el dorso de su mano."],
+  [130,"¿Quiénes son nombrados prefectos de Gryffindor en quinto curso?","Neville Longbottom y Ginny Weasley","Seamus Finnigan y Parvati Patil","Ron Weasley y Hermione Granger","Dean Thomas y Lavender Brown",2,"Dumbledore elige a Ron y Hermione; después explica a Harry por qué no lo nombró."],
+  [131,"¿Qué criaturas tiran realmente de los carruajes de Hogwarts?","Thestrals","Abraxan","Grifos","Hipogrifos",0,"Los thestrals solo resultan visibles para quienes han presenciado y comprendido la muerte."],
+  [132,"¿Quién dice a Harry que también puede ver los thestrals?","Cho Chang","Ginny Weasley","Luna Lovegood","Hermione Granger",2,"Luna los ve porque presenció la muerte de su madre."],
+  [133,"¿Cómo se llama la publicación dirigida por Xenophilius Lovegood?","Corazón de Bruja","Transfiguración Hoy","El Quisquilloso","El Profeta",2,"El Quisquilloso publica la entrevista en la que Harry relata el regreso de Voldemort."],
+  [134,"¿En qué establecimiento se celebra la primera reunión para crear el Ejército de Dumbledore?","En la Sala de los Menesteres","En Las Tres Escobas","En la Casa de los Gritos","En Cabeza de Puerco",3,"Hermione reúne discretamente a los interesados en el bar de Aberforth."],
+  [135,"¿Cómo anuncia Hermione las reuniones del Ejército de Dumbledore?","Mediante pergaminos que se destruyen solos","Mediante lechuzas con mensajes cifrados","Mediante espejos de dos direcciones","Mediante galeones falsos encantados con el encantamiento proteico",3,"La fecha grabada en el galeón de Harry se reproduce en los de todos los miembros."],
+  [136,"¿Quién revela a Umbridge la existencia del Ejército de Dumbledore?","Cho Chang","Marietta Edgecombe","Zacharias Smith","Michael Corner",1,"Marietta, amiga de Cho, habla con Umbridge por miedo a perjudicar la carrera de su madre."],
+  [137,"¿Qué consecuencia sufre Marietta por romper el acuerdo del Ejército de Dumbledore?","Su piel se vuelve verde","Se le cae el cabello","Pierde temporalmente la voz","Le aparecen granos que forman la palabra CHIVATA",3,"Hermione había hechizado el pergamino firmado para señalar a quien traicionara al grupo."],
+  [138,"¿Qué poción intenta utilizar Umbridge para obtener información de Harry?","Filtro de Confusión","Veritaserum","Poción de la Paz","Poción de la Muerte en Vida",1,"Umbridge pide Veritaserum a Snape, aunque él afirma haber agotado sus reservas."],
+  [139,"¿Cómo llama Hagrid a su hermanastro gigante?","Grawp","Golgomath","Karkus","Morfin",0,"Hagrid oculta a Grawp en el Bosque Prohibido e intenta enseñarle inglés."],
+  [140,"¿Quién ataca a Arthur Weasley mientras vigila el Departamento de Misterios?","Bellatrix Lestrange","Fenrir Greyback","Un dementor","Nagini",3,"Harry presencia en sueños cómo Nagini muerde repetidamente a Arthur."],
+  [141,"¿En qué sala de San Mungo están ingresados los padres de Neville?","En la sala de pociones y envenenamientos","En la sala Janus Thickey","En el pabellón de daños por criaturas","En la sala Dai Llewellyn",1,"Frank y Alice Longbottom viven en la sala destinada a daños permanentes por hechizos."],
+  [142,"¿Quién imparte a Harry las clases particulares de Oclumancia?","Minerva McGonagall","Albus Dumbledore","Severus Snape","Remus Lupin",2,"Dumbledore encarga a Snape que enseñe a Harry a cerrar su mente frente a Voldemort."],
+  [143,"¿Qué ve Harry en el peor recuerdo de Snape?","A Dumbledore negándole un puesto de profesor","A James suspendiéndolo boca abajo y exponiendo su ropa interior ante otros alumnos","A Snape jurando fidelidad a Voldemort","A Lily destruyendo una carta suya",1,"James humilla a Snape y amenaza con quitarle los calzoncillos, pero Harry sale del recuerdo antes de verlo."],
+  [144,"¿Cómo abandonan Fred y George Hogwarts después de crear un pantano en el corredor?","Convocan sus escobas con Accio y salen volando","Huyen en el Ford Anglia","Utilizan la Red Flu","Escapan por el pasadizo de Honeydukes",0,"Los gemelos convierten su fuga en una despedida espectacular ante Umbridge y los alumnos."],
+  [145,"¿Qué alumno de Slytherin acaba dentro de un armario evanescente?","Draco Malfoy","Graham Montague","Vincent Crabbe","Gregory Goyle",1,"Fred y George introducen a Montague en el armario; su experiencia dará una pista crucial a Draco."],
+  [146,"¿Cómo viajan Harry, Ron, Hermione, Ginny, Neville y Luna hasta el Ministerio?","En el Autobús Noctámbulo","Mediante un traslador","A lomos de thestrals","En escobas",2,"Luna y Harry pueden ver las monturas, pero los seis llegan volando sobre ellas."],
+  [147,"¿Qué contiene uno de los tanques verdes del Departamento de Misterios?","Cerebros con tentáculos de pensamiento","Profecías líquidas","Embriones de basilisco","Grindylows",0,"Los cerebros atacan a Ron y sus tentáculos le dejan marcas de pensamientos."],
+  [148,"¿Quién hace caer a Sirius a través del Velo?","Lucius Malfoy","Bellatrix Lestrange","Lord Voldemort","Antonin Dolohov",1,"Una maldición de Bellatrix alcanza a Sirius y lo hace retroceder a través del Velo."],
+  [149,"¿Quiénes se enfrentan en el gran duelo del atrio del Ministerio?","Harry Potter y Voldemort","Albus Dumbledore y Lord Voldemort","Kingsley y Lucius Malfoy","Snape y Bellatrix",1,"Dumbledore utiliza las estatuas y grandes masas de agua y fuego para contener a Voldemort."],
+  [150,"¿Qué idea central transmite la profecía sobre Harry y Voldemort?","La sangre pura gobernará el mundo mágico","Harry morirá al cumplir diecisiete años","El heredero de Slytherin renacerá del fuego","Ninguno podrá vivir plenamente mientras el otro siga con vida",3,"La profecía establece que uno de los dos deberá morir a manos del otro."],
+
+  // LIBRO 6
+  [151,"¿A quién visitan primero Cornelius Fudge y después Rufus Scrimgeour al comienzo de la novela?","A Albus Dumbledore","A la reina de Inglaterra","A Vernon Dursley","Al primer ministro muggle británico",3,"Los ministros de Magia informan al primer ministro muggle de la crisis provocada por Voldemort."],
+  [152,"¿En qué pueblo encuentra Dumbledore a Horace Slughorn disfrazado de sillón?","Godric's Hollow","Little Hangleton","Ottery St. Catchpole","Budleigh Babberton",3,"Slughorn simula que la casa ha sido atacada y se convierte en un sillón para esconderse."],
+  [153,"¿Quiénes participan en el Juramento Inquebrantable de La Hilandera?","Voldemort y Snape, con Bellatrix como mediadora","Narcissa y Bellatrix, con Snape como mediador","Snape y Narcissa, con Bellatrix como mediadora","Snape y Lucius, con Narcissa como mediadora",2,"Snape promete proteger a Draco y completar su misión si él fracasa."],
+  [154,"¿Quién encuentra a Harry inmovilizado bajo la capa en el Expreso de Hogwarts?","Remus Lupin","Luna Lovegood","Nymphadora Tonks","Neville Longbottom",2,"En la novela es Tonks quien descubre a Harry y repara su nariz; Luna lo hace en la película."],
+  [155,"¿Quién enseña Defensa Contra las Artes Oscuras durante el sexto curso?","Remus Lupin","Severus Snape","Horace Slughorn","Alastor Moody",1,"Snape obtiene por fin el puesto que había solicitado durante años."],
+  [156,"¿Qué premio ofrece Slughorn al autor del mejor Filtro de Muertos en Vida?","Una botella de hidromiel","Un bezoar de gran calidad","Un frasco de Felix Felicis suficiente para doce horas","Un caldero de oro",2,"Harry gana la suerte líquida gracias a las anotaciones del Príncipe Mestizo."],
+  [157,"¿Cómo recomienda el Príncipe Mestizo extraer el zumo de la judía soporífera?","Aplastándola con el lado plano de un cuchillo de plata","Cortándola en cruz","Macerándola en ajenjo","Calentándola durante cinco minutos",0,"Al aplastar la judía se obtiene mucho más zumo que al cortarla."],
+  [158,"¿Qué dos olores de la Amortentia menciona Hermione en voz alta?","Flores silvestres y cerveza de mantequilla","Hierba recién cortada y pergamino nuevo","Pelo de Ron y tinta fresca","Chocolate y madera de escoba",1,"Hermione se detiene antes de revelar el tercer olor y se ruboriza."],
+  [159,"¿Cómo se llama la madre de Tom Riddle?","Merope Gaunt","Kendra Dumbledore","Eileen Prince","Hepzibah Smith",0,"Merope era hija de Marvolo Gaunt y se enamoró del muggle Tom Riddle."],
+  [160,"¿Qué dos reliquias familiares vinculan a los Gaunt con Slytherin y los Peverell?","La espada de Gryffindor y la Piedra Filosofal","El guardapelo de Slytherin y el anillo de los Peverell","La varita de saúco y el Sombrero Seleccionador","La copa de Hufflepuff y la diadema de Ravenclaw",1,"El guardapelo acredita la herencia de Slytherin y el anillo lleva la piedra asociada a los Peverell."],
+  [161,"¿Por cuánto vende Merope el guardapelo de Slytherin a Caractacus Burke?","Por diez galeones","Por un galeón","Por quinientos galeones","Por cien galeones",0,"Burke se aprovecha de su pobreza y paga una cantidad irrisoria por una pieza excepcional."],
+  [162,"¿Qué objeto maldito causa el accidente de Katie Bell?","Una copa de plata","Un anillo de oro","Un collar de ópalos de Borgin y Burkes","La Mano de la Gloria",2,"El collar estaba destinado a Dumbledore y Katie lo toca a través de un agujero en el envoltorio."],
+  [163,"¿Qué bebida envenenada está a punto de matar a Ron?","Hidromiel envejecida en roble destinada a Dumbledore","Ron de grosella roja","Whisky de fuego Ogden","Cerveza de mantequilla",0,"Slughorn sirve por error la botella que Draco había hecho llegar con la intención de que terminara en manos de Dumbledore."],
+  [164,"¿Qué introduce Harry en la boca de Ron para neutralizar el veneno?","Una mandrágora","Poción pimentónica","Lágrimas de fénix","Un bezoar",3,"Harry recuerda que el bezoar protege contra la mayoría de los venenos."],
+  [165,"¿Con quién comienza a salir Ron, para disgusto de Hermione?","Pansy Parkinson","Lavender Brown","Romilda Vane","Parvati Patil",1,"Lavender y Ron inician una relación muy visible después del partido contra Slytherin."],
+  [166,"¿De qué color es Arnold, el micropuff que compra Ginny?","Rosa","Naranja","Azul","Morado",3,"Ginny compra en Sortilegios Weasley un micropuff morado y lo llama Arnold."],
+  [167,"¿Cómo se llama la coleccionista a quien Tom Riddle roba la copa y el guardapelo?","Griselda Marchbanks","Muriel Weasley","Hepzibah Smith","Bathilda Bagshot",2,"Riddle asesina a Hepzibah y modifica los recuerdos de su elfa Hokey para culparla."],
+  [168,"¿Qué puesto solicita Voldemort a Dumbledore cuando regresa a Hogwarts?","Director de Slytherin","Profesor de Transformaciones","Profesor de Pociones","Profesor de Defensa Contra las Artes Oscuras",3,"Dumbledore rechaza la solicitud y relaciona esa visita con la maldición posterior del puesto."],
+  [169,"¿Qué hechizo del Príncipe Mestizo utiliza Harry contra Draco en el baño?","Levicorpus","Sectumsempra","Langlock","Muffliato",1,"Harry desconoce el efecto del hechizo y queda horrorizado por las heridas que causa."],
+  [170,"¿Cómo cura Snape las heridas de Draco en la novela?","Le da a beber Felix Felicis","Utiliza el hechizo Vulnera Sanentur","Pronuncia tres veces un encantamiento sin nombre parecido a una canción","Aplica esencia de díctamo",2,"La novela no da nombre al encantamiento; Vulnera Sanentur se oye en la adaptación cinematográfica."],
+  [171,"¿Qué dos armarios evanescentes repara y conecta Draco?","El del despacho de Dumbledore y el del Ministerio","El de las mazmorras y el de Grimmauld Place","El de la Sala de los Menesteres y el de Borgin y Burkes","El de la torre de Astronomía y el de la Mansión Malfoy",2,"La conexión permite a los mortífagos entrar directamente en Hogwarts."],
+  [172,"¿Quién pronuncia el elogio fúnebre durante el entierro de Aragog?","Horace Slughorn","Albus Dumbledore","Hagrid","Harry Potter",0,"Slughorn improvisa un elogio grandilocuente antes de empezar a beber con Hagrid y Harry."],
+  [173,"¿Qué sustancia valiosa recoge Slughorn discretamente del cadáver de Aragog?","Veneno de acromántula","Seda de acromántula","Sangre plateada","Pelos de las patas",0,"El veneno de acromántula es raro y puede venderse por una elevada cantidad."],
+  [174,"¿Qué seres protegen el lago de la cueva donde está el falso guardapelo?","Dementores","Inferi","Sirenas oscuras","Grindylows",1,"Los cadáveres reanimados permanecen bajo el agua hasta que Harry intenta tomar agua del lago."],
+  [175,"¿Qué debe hacer Dumbledore para vaciar la cuenca que contiene el guardapelo?","Prestar un Juramento Inquebrantable","Beber toda la poción de la cuenca","Entregar la mitad de su sangre","Romper la piedra con fuego",1,"La poción no puede retirarse ni desaparecerse y obliga a Dumbledore a revivir un sufrimiento extremo."],
+  [176,"¿Qué elemento mantiene alejados a los Inferi?","El fuego","El agua del lago","Un Patronus","El hechizo Lumos",0,"Dumbledore crea un gran anillo de fuego, el arma más eficaz contra los Inferi."],
+  [177,"¿Dónde mata Snape a Dumbledore?","En el patio del reloj","En el Gran Comedor","En el despacho del director","En lo alto de la torre de Astronomía",3,"Draco desarma a Dumbledore en la torre y Snape cumple el plan que había acordado con Dumbledore."],
+  [178,"¿Quiénes eran los padres de Severus Snape?","Hepzibah Prince y Tobias Gaunt","La bruja Eileen Prince y el muggle Tobias Snape","Walburga Black y Septimus Snape","Merope Gaunt y Tobias Prince",1,"El apellido de su madre y la condición muggle de su padre explican el apodo Príncipe Mestizo."],
+  [179,"¿Quién desfigura a Bill Weasley durante el ataque de los mortífagos al castillo?","Amycus Carrow","Thorfinn Rowle","Remus Lupin","Fenrir Greyback",3,"Greyback lo ataca sin estar transformado, por lo que Bill adquiere algunos rasgos lupinos sin convertirse plenamente."],
+  [180,"¿Qué iniciales aparecen en la nota escondida dentro del falso guardapelo?","L. M.","S. S.","R. A. B.","A. P. W. B. D.",2,"La misteriosa firma R. A. B. conduce después hasta Regulus Arcturus Black."],
+
+  // LIBRO 7
+  [181,"¿Qué profesora de Estudios Muggles asesina Voldemort en la Mansión Malfoy?","Aurora Sinistra","Septima Vector","Rolanda Hooch","Charity Burbage",3,"Voldemort mata a Charity por enseñar que los muggles no son inferiores a los magos."],
+  [182,"¿Cuántas personas toman la poción Multijugos para convertirse en copias de Harry?","Cinco","Ocho","Seis","Siete",2,"Ron, Hermione, Fred, George, Fleur y Mundungus se convierten en los seis señuelos."],
+  [183,"¿Qué herida sufre George durante la operación de los Siete Potter?","Pierde una oreja por un Sectumsempra lanzado accidentalmente por Snape","Recibe una mordedura de Nagini","Se rompe un brazo al caer de la escoba","Pierde un ojo por una maldición de Dolohov",0,"Snape intentaba alcanzar la mano de otro mortífago, pero su hechizo golpea a George; el libro no precisa qué oreja."],
+  [184,"¿Qué dos aliados mueren durante la huida desde Privet Drive?","Colin Creevey y Kingsley","Mundungus Fletcher y Arthur Weasley","Hedwig y Alastor Moody","Dobby y Remus Lupin",2,"Hedwig muere en su jaula y Voldemort alcanza a Moody cuando Mundungus huye."],
+  [185,"¿Qué cuatro objetos lega Dumbledore a Ron, Hermione y Harry?","La varita de saúco, la Piedra de la Resurrección, la capa y el Pensadero","El Mapa del Merodeador, un giratiempo, la espada y la Snitch","Un reloj de oro, un libro de runas, una escoba y la capa","El Desiluminador, Los cuentos de Beedle el Bardo, la Snitch y la espada de Gryffindor",3,"Ron recibe el Desiluminador, Hermione el libro y Harry la Snitch y la espada, aunque el Ministerio retiene esta última."],
+  [186,"¿Qué inscripción aparece en la Snitch que Dumbledore deja a Harry?","Para el más valiente de Gryffindor","La muerte es solo el comienzo","Donde esté tu tesoro estará tu corazón","Me abro al cierre",3,"La Snitch se abre cuando Harry acepta que va a morir y revela la Piedra de la Resurrección."],
+  [187,"¿Qué anciana pariente de Ron presta a Fleur una tiara hecha por duendes?","Tía Andromeda","Tía Cassie","Tía Muriel","Tía Enid",2,"Muriel tiene ciento siete años y presta a la novia una valiosa tiara familiar."],
+  [188,"¿Qué Patronus anuncia durante la boda que el Ministerio ha caído?","El gato de McGonagall","El fénix de Dumbledore","El lince de Kingsley Shacklebolt","La nutria de Hermione",2,"El lince comunica la muerte de Scrimgeour y la llegada de los mortífagos."],
+  [189,"¿En qué lugar de Tottenham Court Road se enfrentan Harry, Ron y Hermione a Dolohov y Rowle?","En la recepción de un hotel","En una estación de metro","En una cafetería abierta toda la noche","En una librería",2,"Tras huir de la boda, el trío entra en una cafetería; el tabú sobre el nombre de Voldemort permite que los mortífagos los localicen."],
+  [190,"¿Quién se escondía tras las iniciales R. A. B.?","Remus Arthur Black","Rodolphus Avery Burke","Regulus Arcturus Black","Rabastan Augustus Black",2,"Regulus, hermano menor de Sirius, robó el guardapelo auténtico con ayuda de Kreacher."],
+  [191,"¿A qué funcionario suplanta Harry para infiltrarse en el Ministerio?","Albert Runcorn","Mafalda Hopkirk","Pius Thicknesse","Reginald Cattermole",0,"La apariencia intimidante de Runcorn permite a Harry moverse por el Ministerio controlado."],
+  [192,"¿A quiénes suplantan Hermione y Ron en el Ministerio?","Hermione a Cattermole y Ron a Hopkirk","Hermione a Mary Cattermole y Ron a Yaxley","Hermione a Umbridge y Ron a Runcorn","Hermione a Mafalda Hopkirk y Ron a Reginald Cattermole",3,"Hermione adopta la identidad de Hopkirk y Ron la del empleado Cattermole."],
+  [193,"¿Qué objeto está incrustado en la puerta del despacho de Umbridge?","Una oreja extensible","Un espejo de dos direcciones","Un chivatoscopio","El ojo mágico de Alastor Moody",3,"Harry reconoce el ojo de Moody y se lo lleva para enterrarlo dignamente."],
+  [194,"¿Qué combinación de factores lleva a Ron a abandonar temporalmente la búsqueda?","La influencia del Horrocrux, su herida, el hambre y sus celos","Una orden de Dumbledore y una amenaza de Snape","Un hechizo de Hermione que altera su memoria","El deseo de entregar el guardapelo al Ministerio",0,"El guardapelo amplifica las inseguridades y el malestar que Ron ya arrastra."],
+  [195,"¿Qué inscripción figura en la tumba de James y Lily Potter?","Descansan en la luz eterna","El último enemigo que será destruido es la muerte","La muerte no es sino el siguiente gran paso","Donde esté vuestro tesoro, allí estará vuestro corazón",1,"La frase procede de la primera carta a los Corintios y cobra un significado central al final de la novela."],
+  [196,"¿Qué encuentra Harry dentro del cuerpo de Bathilda Bagshot?","A Bellatrix bajo los efectos de la poción Multijugos","A Nagini, que utiliza el cadáver como escondite","A un inferius enviado por Voldemort","A un boggart con forma de anciana",1,"Bathilda ya está muerta y Nagini se oculta en su cuerpo para tender una emboscada."],
+  [197,"¿Cómo se rompe la varita de acebo de Harry?","Un maleficio explosivo de Hermione rebota durante la huida de Nagini","Se quiebra al sacar la espada del estanque","Ron la pisa en el campamento","Voldemort la parte en el cementerio",0,"La explosión destruye parte de la casa y rompe accidentalmente la varita de Harry."],
+  [198,"¿Qué forma tiene el Patronus que conduce a Harry hasta la espada?","Un ciervo","Una cierva","Un perro negro","Una nutria",1,"La cierva es el Patronus de Snape y refleja su amor permanente por Lily."],
+  [199,"¿Quién salva a Harry del estanque helado y destruye después el guardapelo?","Ron Weasley","Hermione Granger","Severus Snape","Remus Lupin",0,"Ron recupera la espada, rescata a Harry y supera las visiones del Horrocrux antes de destruirlo."],
+  [200,"¿Qué correspondencia une las Reliquias de la Muerte con su símbolo?","Varita: línea; Piedra: triángulo; Capa: círculo","Varita: triángulo; Piedra: línea; Capa: círculo","Varita: línea; Piedra: círculo; Capa: triángulo","Varita: círculo; Piedra: triángulo; Capa: línea",2,"La línea representa la Varita de Saúco, el círculo la Piedra y el triángulo la Capa."],
+  [201,"¿Qué palabra tabú permite a los carroñeros localizar a Harry?","Hogwarts","Dumbledore","Horrocrux","Voldemort",3,"El nombre de Voldemort está protegido por un tabú que rompe encantamientos defensivos y revela la posición de quien lo pronuncia."],
+  [202,"¿Qué hace Hermione para dificultar que los carroñeros reconozcan a Harry?","Lo convierte temporalmente en una niña","Le hace desaparecer las gafas y la cicatriz","Le hincha y deforma el rostro con un maleficio punzante","Le cambia el cabello a rojo",2,"La deformación hace que los mortífagos no estén completamente seguros de su identidad."],
+  [203,"¿Cómo tortura Bellatrix a Hermione en la novela?","Le graba Sangre sucia en el brazo","Utiliza repetidamente la maldición Cruciatus y después la amenaza con un cuchillo","Le obliga a beber Veritaserum","Utiliza Legeremancia para borrar sus recuerdos",1,"La inscripción del brazo pertenece a la película; en el libro Bellatrix emplea Crucio y el cuchillo."],
+  [204,"¿Cómo recibe Dobby la herida mortal después de rescatar a los prisioneros?","Una maldición de Lucius lo alcanza en el sótano","El cuchillo que lanza Bellatrix lo alcanza mientras desaparecen","Voldemort le lanza Avada Kedavra","Greyback lo muerde",1,"El cuchillo de Bellatrix llega con ellos hasta El Refugio y hiere mortalmente a Dobby."],
+  [205,"¿Qué inscripción pone Harry en la tumba de Dobby?","El más fiel de los amigos mágicos","Aquí yace Dobby, un elfo libre","Descansa en libertad eterna","Dobby, héroe de Hogwarts",1,"Harry cava la tumba sin magia y graba personalmente ese epitafio en la piedra."],
+  [206,"¿Qué Horrocrux guardaba Bellatrix en su cámara de Gringotts?","La copa de Helga Hufflepuff","El guardapelo de Slytherin","El anillo de los Gaunt","La diadema de Rowena Ravenclaw",0,"Voldemort confió a Bellatrix la copa sin explicarle que era un Horrocrux."],
+  [207,"¿Cómo destruye Hermione la copa de Hufflepuff?","Utiliza la espada de Gryffindor","Ron le lanza Reducto","La arroja al fuego maldito","La atraviesa con un colmillo del basilisco",3,"Ron y Hermione bajan a la Cámara de los Secretos para recuperar colmillos del esqueleto."],
+  [208,"¿Quién provoca el fuego maldito que destruye la diadema de Ravenclaw?","Vincent Crabbe","Harry Potter","Gregory Goyle","Draco Malfoy",0,"Crabbe pierde el control del fuego maldito y muere en la Sala de los Menesteres."],
+  [209,"¿Qué exclama Molly Weasley antes de enfrentarse a Bellatrix en la edición Salamandra?","¡A mi hija no, perra!","¡Pagarás por Fred!","¡Aléjate de Ginny ahora mismo!","¡A mi hija no, mala bruja!",3,"La traducción de Salamandra suaviza el insulto del original inglés y utiliza mala bruja."],
+  [210,"¿Cómo se llaman los tres hijos de Harry y Ginny?","Albus James, Sirius Fred y Luna Ginny","James Sirius, Albus Severus y Lily Luna","Harry, Ronald y Hermione","James Remus, Arthur Albus y Lily Molly",1,"Los nombres homenajean a familiares y personas decisivas en la vida de Harry."]
+];
+
+const QUESTIONS = RAW_QUESTIONS.map(item => ({
+  id: item[0],
+  book: Math.ceil(item[0] / 30),
+  q: item[1],
+  originalOptions: [item[2], item[3], item[4], item[5]],
+  correctText: item[2], // La opción 0 en RAW siempre es la correcta
+  exp: item[7]
+}));
+
+// LocalStorage Keys
+const SK_MISTAKES = "hp_quiz_mistakes_v2";
+const SK_BOOKS = "hp_quiz_books_v2";
+const SK_CORRECTS = "hp_quiz_corrects_v2";
+const SK_HIGHSCORES = "hp_quiz_highscores_v2";
+const SK_AUDIO = "hp_quiz_audio_v2";
+
+let selectedBooks = new Set([1, 2, 3, 4, 5, 6, 7]);
+let selectedMode = "rapida";
+let savedMistakes = new Set();
+let savedCorrects = new Set(); // Para medidor de dominio
+let highScores = {};
+let soundEnabled = true;
+
+// Estado partida
+let activeDeck = [];
+let currentIndex = 0;
+let score = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let lives = 3;
+let felixAvailable = true;
+let sessionWrongList = [];
+
+// Audio sintético con Web Audio API
+let audioCtx = null;
+function playSound(type) {
+  if (!soundEnabled) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+
+    if (type === 'correct') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    } else if (type === 'wrong') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(180, now);
+      osc.frequency.linearRampToValueAtTime(90, now + 0.25);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    } else if (type === 'felix') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, now);
+      osc.frequency.exponentialRampToValueAtTime(1174.66, now + 0.2);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    }
+  } catch(e) {}
+}
+
+function loadStorage() {
+  try {
+    if (localStorage.getItem(SK_MISTAKES)) savedMistakes = new Set(JSON.parse(localStorage.getItem(SK_MISTAKES)));
+    if (localStorage.getItem(SK_CORRECTS)) savedCorrects = new Set(JSON.parse(localStorage.getItem(SK_CORRECTS)));
+    if (localStorage.getItem(SK_BOOKS)) {
+      const parsed = JSON.parse(localStorage.getItem(SK_BOOKS));
+      if (Array.isArray(parsed) && parsed.length > 0) selectedBooks = new Set(parsed);
+    }
+    if (localStorage.getItem(SK_HIGHSCORES)) highScores = JSON.parse(localStorage.getItem(SK_HIGHSCORES));
+    if (localStorage.getItem(SK_AUDIO) !== null) soundEnabled = JSON.parse(localStorage.getItem(SK_AUDIO));
+  } catch(e) {}
+}
+
+function saveStorage() {
+  try {
+    localStorage.setItem(SK_MISTAKES, JSON.stringify([...savedMistakes]));
+    localStorage.setItem(SK_CORRECTS, JSON.stringify([...savedCorrects]));
+    localStorage.setItem(SK_BOOKS, JSON.stringify([...selectedBooks]));
+    localStorage.setItem(SK_HIGHSCORES, JSON.stringify(highScores));
+    localStorage.setItem(SK_AUDIO, JSON.stringify(soundEnabled));
+  } catch(e) {}
+}
+
+function renderBookList() {
+  const container = document.getElementById("book-list");
+  container.innerHTML = "";
+  BOOKS_INFO.forEach(b => {
+    const isSel = selectedBooks.has(b.id);
+    const bookQs = QUESTIONS.filter(q => q.book === b.id);
+    const mastered = bookQs.filter(q => savedCorrects.has(q.id)).length;
+
+    const item = document.createElement("div");
+    item.className = "book-item" + (isSel ? " selected" : "");
+    item.innerHTML = `
+      <div class="book-left">
+        <div class="roman-badge">${b.roman}</div>
+        <div class="book-info">
+          <div class="book-title">${b.title}</div>
+          <div class="book-count">Dominio: ${mastered} / 30 preguntas</div>
+        </div>
+      </div>
+      <div class="check-circle">
+        <svg class="check-icon" viewBox="0 0 24 24">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+    `;
+    item.addEventListener("click", () => {
+      if (selectedBooks.has(b.id)) selectedBooks.delete(b.id);
+      else selectedBooks.add(b.id);
+      saveStorage();
+      renderBookList();
+      updateSummary();
+    });
+    container.appendChild(item);
+  });
+}
+
+function updateSummary() {
+  const numBooks = selectedBooks.size;
+  const summaryEl = document.getElementById("summary-box");
+  const startBtn = document.getElementById("btn-start");
+  const fallosDesc = document.getElementById("fallos-desc");
+
+  // Mostrar récords en los modos
+  document.getElementById("rec-rapida").textContent = highScores['rapida'] ? `Récord: ${highScores['rapida']}p` : "";
+  document.getElementById("rec-diez").textContent = highScores['diez'] ? `Récord: ${highScores['diez']}p` : "";
+  document.getElementById("rec-completa").textContent = highScores['completa'] ? `Récord: ${highScores['completa']}p` : "";
+  document.getElementById("rec-supervivencia").textContent = highScores['supervivencia'] ? `Récord: ${highScores['supervivencia']}p` : "";
+  document.getElementById("rec-fallos").textContent = highScores['fallos'] ? `Récord: ${highScores['fallos']}p` : "";
+
+  const mistakesInSelected = QUESTIONS.filter(q => selectedBooks.has(q.book) && savedMistakes.has(q.id)).length;
+  fallosDesc.textContent = savedMistakes.size > 0
+    ? `Repite preguntas que fallaste (${mistakesInSelected} en libros elegidos)`
+    : "No hay fallos en estos libros";
+
+  if (numBooks === 0) {
+    summaryEl.innerHTML = `No has elegido ningún libro. Selecciona al menos <span class="gold-text">1 libro</span>.`;
+    startBtn.disabled = true;
+    return;
+  }
+
+  const bText = numBooks === 1 ? "1 libro" : `${numBooks} libros`;
+  if (selectedMode === "rapida") {
+    summaryEl.innerHTML = `Partida rápida en <span class="gold-text">${bText}</span>: <span class="gold-text">20 preguntas mezcladas</span>.`;
+    startBtn.disabled = false;
+  } else if (selectedMode === "diez") {
+    summaryEl.innerHTML = `Partida de <span class="gold-text">${numBooks * 10} preguntas</span> (10 por cada libro seleccionado).`;
+    startBtn.disabled = false;
+  } else if (selectedMode === "completa") {
+    summaryEl.innerHTML = `Partida completa con las <span class="gold-text">${numBooks * 30} preguntas</span> de los libros elegidos.`;
+    startBtn.disabled = false;
+  } else if (selectedMode === "supervivencia") {
+    summaryEl.innerHTML = `Modo Supervivencia (<span class="gold-text">3 vidas</span>) con el banco de <span class="gold-text">${numBooks * 30} preguntas</span>.`;
+    startBtn.disabled = false;
+  } else if (selectedMode === "fallos") {
+    if (mistakesInSelected === 0) {
+      summaryEl.innerHTML = `No tienes fallos guardados en los libros seleccionados.`;
+      startBtn.disabled = true;
+    } else {
+      summaryEl.innerHTML = `Repasando <span class="gold-text">${mistakesInSelected} preguntas falladas</span> de tus libros seleccionados.`;
+      startBtn.disabled = false;
+    }
+  }
+}
+
+function shuffle(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function buildDeck() {
+  const pool = QUESTIONS.filter(q => selectedBooks.has(q.book));
+  if (selectedMode === "rapida") return shuffle(pool).slice(0, 20);
+  if (selectedMode === "diez") {
+    let deck = [];
+    BOOKS_INFO.forEach(b => {
+      if (selectedBooks.has(b.id)) {
+        const bookQs = pool.filter(q => q.book === b.id);
+        deck = deck.concat(shuffle(bookQs).slice(0, 10));
+      }
+    });
+    return deck;
+  }
+  if (selectedMode === "completa") return pool;
+  if (selectedMode === "supervivencia") return shuffle(pool);
+  if (selectedMode === "fallos") return shuffle(pool.filter(q => savedMistakes.has(q.id)));
+  return shuffle(pool).slice(0, 20);
+}
+
+function startGame() {
+  activeDeck = buildDeck();
+  if (activeDeck.length === 0) return;
+
+  currentIndex = 0;
+  score = 0;
+  correctCount = 0;
+  wrongCount = 0;
+  lives = 3;
+  felixAvailable = true;
+  sessionWrongList = [];
+
+  document.getElementById("setup-screen").classList.add("hidden");
+  document.getElementById("results-screen").classList.add("hidden");
+  document.getElementById("quiz-screen").classList.remove("hidden");
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const rawQ = activeDeck[currentIndex];
+  const bookMeta = BOOKS_INFO.find(b => b.id === rawQ.book);
+
+  // Barajar opciones aleatoriamente para esta pregunta
+  const shuffledOpts = shuffle(rawQ.originalOptions);
+  const correctIndex = shuffledOpts.indexOf(rawQ.correctText);
+
+  // Guardamos las opciones barajadas en el objeto temporal de la pregunta actual
+  currentQuestionData = {
+    ...rawQ,
+    options: shuffledOpts,
+    ans: correctIndex
+  };
+
+  document.getElementById("score-val").textContent = score;
+
+  const livesBadge = document.getElementById("lives-badge");
+  if (selectedMode === "supervivencia") {
+    livesBadge.style.display = "inline-block";
+    livesBadge.textContent = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+  } else {
+    livesBadge.style.display = "none";
+  }
+
+  const felixBtn = document.getElementById("btn-felix");
+  felixBtn.disabled = !felixAvailable;
+  document.getElementById("felix-count").textContent = felixAvailable ? "1" : "0";
+
+  const pct = ((currentIndex) / activeDeck.length) * 100;
+  document.getElementById("progress-fill").style.width = `${pct}%`;
+
+  document.getElementById("q-book-label").textContent = `Libro ${bookMeta.roman} · ${bookMeta.title}`;
+  document.getElementById("q-text").textContent = currentQuestionData.q;
+
+  const optionsList = document.getElementById("options-list");
+  optionsList.innerHTML = "";
+  const letters = ["A", "B", "C", "D"];
+
+  currentQuestionData.options.forEach((optText, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "option-btn";
+    btn.setAttribute("data-index", idx);
+    btn.innerHTML = `
+      <span class="opt-letter">${letters[idx]}</span>
+      <span>${optText}</span>
+    `;
+    btn.addEventListener("click", () => handleAnswer(idx, btn));
+    optionsList.appendChild(btn);
+  });
+
+  document.getElementById("explanation-box").classList.add("hidden");
+  document.getElementById("btn-next").classList.add("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+let currentQuestionData = null;
+
+function useFelixFelicis() {
+  if (!felixAvailable) return;
+  felixAvailable = false;
+  score = Math.max(0, score - 15);
+  document.getElementById("score-val").textContent = score;
+  document.getElementById("btn-felix").disabled = true;
+  document.getElementById("felix-count").textContent = "0";
+  playSound('felix');
+
+  // Descartar 2 incorrectas
+  const allBtns = document.querySelectorAll("#options-list .option-btn");
+  let eliminatedCount = 0;
+  allBtns.forEach(btn => {
+    const idx = parseInt(btn.getAttribute("data-index"));
+    if (idx !== currentQuestionData.ans && eliminatedCount < 2) {
+      btn.classList.add("eliminated");
+      eliminatedCount++;
+    }
+  });
+}
+
+function handleAnswer(chosenIdx, clickedBtn) {
+  const allBtns = document.querySelectorAll("#options-list .option-btn");
+  allBtns.forEach(b => b.disabled = true);
+  document.getElementById("btn-felix").disabled = true;
+
+  const isCorrect = chosenIdx === currentQuestionData.ans;
+  const expBox = document.getElementById("explanation-box");
+  const expStatus = document.getElementById("exp-status");
+  const expText = document.getElementById("exp-text");
+
+  if (isCorrect) {
+    clickedBtn.classList.add("correct");
+    score += 10;
+    correctCount++;
+    playSound('correct');
+    expStatus.textContent = "✓ ¡Correcto! (+10 puntos)";
+    expStatus.style.color = "var(--correct)";
+
+    savedCorrects.add(currentQuestionData.id);
+    if (savedMistakes.has(currentQuestionData.id)) {
+      savedMistakes.delete(currentQuestionData.id);
+    }
+    saveStorage();
+  } else {
+    clickedBtn.classList.add("wrong");
+    allBtns[currentQuestionData.ans].classList.add("correct");
+    score -= 3;
+    wrongCount++;
+    playSound('wrong');
+    expStatus.textContent = "✕ Incorrecto (−3 puntos)";
+    expStatus.style.color = "var(--wrong)";
+
+    savedMistakes.add(currentQuestionData.id);
+    saveStorage();
+
+    sessionWrongList.push({
+      q: currentQuestionData.q,
+      correct: currentQuestionData.options[currentQuestionData.ans],
+      exp: currentQuestionData.exp
+    });
+
+    if (selectedMode === "supervivencia") {
+      lives--;
+      const livesBadge = document.getElementById("lives-badge");
+      livesBadge.textContent = "❤️".repeat(Math.max(0, lives)) + "🖤".repeat(3 - Math.max(0, lives));
+    }
+  }
+
+  document.getElementById("score-val").textContent = score;
+  expText.textContent = currentQuestionData.exp;
+  expBox.classList.remove("hidden");
+
+  const nextBtn = document.getElementById("btn-next");
+  if ((selectedMode === "supervivencia" && lives <= 0) || currentIndex + 1 >= activeDeck.length) {
+    nextBtn.textContent = "Ver resultados";
+  } else {
+    nextBtn.textContent = "Siguiente pregunta";
+  }
+  nextBtn.classList.remove("hidden");
+}
+
+function nextStep() {
+  if ((selectedMode === "supervivencia" && lives <= 0) || currentIndex + 1 >= activeDeck.length) {
+    showResults();
+  } else {
+    currentIndex++;
+    renderQuestion();
+  }
+}
+
+function showResults() {
+  document.getElementById("quiz-screen").classList.add("hidden");
+  document.getElementById("results-screen").classList.remove("hidden");
+
+  const totalAnswered = correctCount + wrongCount;
+  const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+
+  // Actualizar récord
+  if (!highScores[selectedMode] || score > highScores[selectedMode]) {
+    highScores[selectedMode] = score;
+    saveStorage();
+  }
+
+  document.getElementById("final-score").textContent = `${score} pts`;
+  document.getElementById("res-correct").textContent = correctCount;
+  document.getElementById("res-wrong").textContent = wrongCount;
+  document.getElementById("res-pct").textContent = `${accuracy}%`;
+
+  // Asignar Calificación T.I.M.O.
+  let gradeText = "TROL (T)";
+  let msg = "Has de esforzarte mucho más en las mazmorras.";
+  if (accuracy >= 90) { gradeText = "EXTRAORDINARIO (E)"; msg = "¡Nivel ÉXTASIS superado con honores! Dumbledore estaría orgulloso."; }
+  else if (accuracy >= 75) { gradeText = "SUPERA LAS PREVISIONES (S)"; msg = "¡Excelente dominio de la magia y los libros!"; }
+  else if (accuracy >= 50) { gradeText = "ACEPTABLE (A)"; msg = "Aprobado holgadamente. Un repaso en la biblioteca te sentará bien."; }
+  else if (accuracy >= 35) { gradeText = "INSATISFACTORIO (I)"; msg = "Por los pelos. Necesitas repasar los hechizos básicos."; }
+  else if (accuracy >= 15) { gradeText = "DESASTROSO (D)"; msg = "Cuidado con los Sortilegios Weasley, te han despistado."; }
+
+  document.getElementById("res-grade").textContent = gradeText;
+  document.getElementById("final-message").textContent = msg;
+
+  // Sección de repaso de fallos de la sesión
+  const reviewSec = document.getElementById("review-section");
+  const reviewList = document.getElementById("review-list-content");
+  document.getElementById("session-wrong-count").textContent = sessionWrongList.length;
+
+  if (sessionWrongList.length > 0) {
+    reviewSec.style.display = "block";
+    reviewList.innerHTML = "";
+    sessionWrongList.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "review-item";
+      div.innerHTML = `
+        <div class="review-q">${item.q}</div>
+        <div class="review-ans">✓ Respuesta: ${item.correct}</div>
+      `;
+      reviewList.appendChild(div);
+    });
+  } else {
+    reviewSec.style.display = "none";
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// Eventos de interfaz
+document.getElementById("btn-select-all").addEventListener("click", () => {
+  selectedBooks = new Set([1, 2, 3, 4, 5, 6, 7]);
+  saveStorage();
+  renderBookList();
+  updateSummary();
+});
+
+document.getElementById("btn-clear-all").addEventListener("click", () => {
+  selectedBooks.clear();
+  saveStorage();
+  renderBookList();
+  updateSummary();
+});
+
+document.getElementById("btn-clear-mistakes").addEventListener("click", () => {
+  savedMistakes.clear();
+  saveStorage();
+  updateSummary();
+  alert("Se han borrado los fallos guardados.");
+});
+
+document.getElementById("btn-audio-toggle").addEventListener("click", () => {
+  soundEnabled = !soundEnabled;
+  saveStorage();
+  document.getElementById("btn-audio-toggle").textContent = soundEnabled ? "🔊" : "🔇";
+});
+
+document.getElementById("btn-felix").addEventListener("click", useFelixFelicis);
+
+document.getElementById("btn-toggle-review").addEventListener("click", () => {
+  const list = document.getElementById("review-list-content");
+  list.classList.toggle("hidden");
+});
+
+document.querySelectorAll("#mode-list .mode-item").forEach(item => {
+  item.addEventListener("click", () => {
+    document.querySelectorAll("#mode-list .mode-item").forEach(el => el.classList.remove("selected"));
+    item.classList.add("selected");
+    selectedMode = item.getAttribute("data-mode");
+    updateSummary();
+  });
+});
+
+document.getElementById("btn-start").addEventListener("click", startGame);
+document.getElementById("btn-next").addEventListener("click", nextStep);
+
+document.getElementById("btn-quit").addEventListener("click", () => {
+  document.getElementById("quiz-screen").classList.add("hidden");
+  document.getElementById("setup-screen").classList.remove("hidden");
+  updateSummary();
+});
+
+document.getElementById("btn-play-again").addEventListener("click", startGame);
+
+document.getElementById("btn-back-menu").addEventListener("click", () => {
+  document.getElementById("results-screen").classList.add("hidden");
+  document.getElementById("setup-screen").classList.remove("hidden");
+  updateSummary();
+});
+
+document.getElementById("btn-share").addEventListener("click", () => {
+  const totalAnswered = correctCount + wrongCount;
+  const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+  const shareText = `⚡ ¡He completado el Quiz de Harry Potter!\n🏆 Puntuación: ${score} pts\n🎯 Precisión: ${accuracy}%\n🧙‍♂️ ¡Desafía tus conocimientos mágicos!`;
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(shareText).then(() => {
+      alert("¡Resultado copiado al portapapeles para compartir!");
+    });
+  } else {
+    alert(shareText);
+  }
+});
+
+// Inicialización
+loadStorage();
+document.getElementById("btn-audio-toggle").textContent = soundEnabled ? "🔊" : "🔇";
+renderBookList();
+updateSummary();
+</script>
+</body>
+</html>
